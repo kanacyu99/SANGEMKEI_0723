@@ -51,14 +51,34 @@ function App() {
     <div style={{ padding: '1rem', fontFamily: 'sans-serif' }}>
       <h2>三元組成プロット（CaO–SiO₂–Al₂O₃）＋相領域判定＋C/S比</h2>
 
+      {/* 成分入力欄 */}
       <div style={{ display: 'flex', flexDirection: 'column', maxWidth: 400 }}>
         {Object.keys(composition).map((key) => (
-          <label key={key}>
-            {key}: <input type="number" name={key} value={composition[key]} onChange={handleChange} />
+          <label key={key} style={{ marginBottom: '6px' }}>
+            {key}:{' '}
+            <input
+              type="number"
+              name={key}
+              value={composition[key]}
+              onChange={handleChange}
+              step="0.1"
+              min="0"
+              max="100"
+              inputMode="decimal"
+              placeholder="例: 45.0"
+              style={{
+                width: '100px',
+                padding: '6px',
+                marginLeft: '8px',
+                border: '1px solid #ccc',
+                borderRadius: '4px'
+              }}
+            />
           </label>
         ))}
       </div>
 
+      {/* 換算後の成分 */}
       <p><strong>換算後の三成分：</strong></p>
       <ul>
         <li>CaO: {normalized.CaO.toFixed(1)}%</li>
@@ -66,6 +86,7 @@ function App() {
         <li>Al₂O₃: {normalized.Al2O3.toFixed(1)}%</li>
       </ul>
 
+      {/* C/S比 */}
       {csRatio !== null && (
         <p style={{ background: '#eef6ff', padding: '0.5rem', borderRadius: '6px' }}>
           <strong>📐 C/S比（CaO / SiO₂）: </strong>{csRatio.toFixed(2)}<br />
@@ -77,6 +98,7 @@ function App() {
         </p>
       )}
 
+      {/* 判定結果 */}
       <p style={{
         fontSize: '1.1rem',
         lineHeight: '1.6',
@@ -89,6 +111,7 @@ function App() {
         {phaseJudgement}
       </p>
 
+      {/* プロット */}
       <Plot
         data={[
           {
