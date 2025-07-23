@@ -18,20 +18,38 @@ function App() {
     Al2O3: (composition.Al2O3 / selectedTotal) * 100
   };
 
+  const csRatio = normalized.SiO2 !== 0 ? normalized.CaO / normalized.SiO2 : null;
+
   const phaseJudgement = (() => {
     const { CaO, SiO2, Al2O3 } = normalized;
 
-    if (CaO > 60 && Al2O3 < 10) return "C₃S（トリカルシウムシリケート）領域の可能性";
-    if (CaO > 45 && SiO2 > 30 && Al2O3 < 15) return "C₂S（ジカルシウムシリケート）領域の可能性";
-    if (Al2O3 > 30 && CaO > 40) return "C₃A（トリカルシウムアルミネート）領域の可能性";
-    if (Al2O3 > 30 && CaO < 30) return "CA, CA₂ 領域の可能性";
-    if (SiO2 > 60) return "シリカリッチ領域の可能性";
-    return "中間相または複数相混在領域の可能性";
+    if (CaO > 60 && Al2O3 < 10) {
+      return `C₃S（トリカルシウムシリケート）領域の可能性です。
+用途：セメントの初期強度発現に寄与。早期硬化性が高い。`;
+    }
+    if (CaO > 45 && SiO2 > 30 && Al2O3 < 15) {
+      return `C₂S（ジカルシウムシリケート）領域の可能性です。
+用途：長期強度に寄与。スラグ硬化型用途に多い。`;
+    }
+    if (Al2O3 > 30 && CaO > 40) {
+      return `C₃A（トリカルシウムアルミネート）領域の可能性です。
+用途：凝結反応に関与。反応性は高いが耐久性には注意。`;
+    }
+    if (Al2O3 > 30 && CaO < 30) {
+      return `CA・CA₂領域の可能性です。
+用途：耐火材や高アルミナセメント。高温安定性が高い。`;
+    }
+    if (SiO2 > 60) {
+      return `シリカリッチ領域の可能性です。
+用途：スラグ流動性向上。過剰で硬化性は低下。`;
+    }
+    return `中間相または複数相混在領域の可能性です。
+用途：特性が明確でなく、調整によって性質が変動しやすい。`;
   })();
 
   return (
     <div style={{ padding: '1rem', fontFamily: 'sans-serif' }}>
-      <h2>三元組成プロット（CaO–SiO₂–Al₂O₃）＋相領域判定</h2>
+      <h2>三元組成プロット（CaO–SiO₂–Al₂O₃）＋相領域判定＋C/S比</h2>
 
       <div style={{ display: 'flex', flexDirection: 'column', maxWidth: 400 }}>
         {Object.keys(composition).map((key) => (
@@ -48,7 +66,28 @@ function App() {
         <li>Al₂O₃: {normalized.Al2O3.toFixed(1)}%</li>
       </ul>
 
-      <p><strong>🔎 判定結果：</strong><br />{phaseJudgement}</p>
+      {csRatio !== null && (
+        <p style={{ background: '#eef6ff', padding: '0.5rem', borderRadius: '6px' }}>
+          <strong>📐 C/S比（CaO / SiO₂）: </strong>{csRatio.toFixed(2)}<br />
+          {csRatio > 2.5
+            ? '→ 大カルシウムシリケート傾向（反応性・膨張性に注意）'
+            : csRatio < 1.5
+              ? '→ シリカリッチ傾向（硬化性や強度に注意）'
+              : '→ バランス型（C₂SやC₃Sの可能性）'}
+        </p>
+      )}
+
+      <p style={{
+        fontSize: '1.1rem',
+        lineHeight: '1.6',
+        backgroundColor: '#eef',
+        padding: '1rem',
+        borderRadius: '8px',
+        whiteSpace: 'pre-wrap'
+      }}>
+        🔎 判定結果：<br />
+        {phaseJudgement}
+      </p>
 
       <Plot
         data={[
