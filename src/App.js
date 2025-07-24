@@ -31,7 +31,6 @@ function App() {
 
   const phaseJudgement = (() => {
     const { CaO, SiO2, Al2O3 } = normalized;
-
     if (CaO > 60 && Al2O3 < 10) {
       return `C₃S（トリカルシウムシリケート）領域の可能性です。\n用途：セメントの初期強度発現に寄与。早期硬化性が高い。`;
     }
@@ -121,20 +120,21 @@ function App() {
             type: 'scatterternary',
             mode: 'markers',
             a: [normalized.Al2O3],
-            b: [normalized.SiO2],
-            c: [normalized.CaO],
+            b: [normalized.CaO],  // CaOを右側に
+            c: [normalized.SiO2], // SiO2を左側に
             marker: { size: 14, color: 'red' },
             name: '換算組成'
           }
         ]}
         layout={{
           ternary: {
+            sum: 100,
             aaxis: { title: 'Al₂O₃', min: 0, max: 100, ticksuffix: '%' },
-            baxis: { title: 'SiO₂', min: 0, max: 100, ticksuffix: '%' },
-            caxis: { title: 'CaO', min: 0, max: 100, ticksuffix: '%' }
+            baxis: { title: 'CaO', min: 0, max: 100, ticksuffix: '%' },
+            caxis: { title: 'SiO₂', min: 0, max: 100, ticksuffix: '%' }
           },
-          width: 500,
-          height: 500,
+          width: 520,
+          height: 520,
           margin: { t: 0 },
           showlegend: true
         }}
