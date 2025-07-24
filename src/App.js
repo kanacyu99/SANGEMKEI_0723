@@ -3,20 +3,11 @@ import Plot from 'react-plotly.js';
 
 function App() {
   const [composition, setComposition] = useState({
-    CaO: 42.0,
-    SiO2: 32.0,
-    Al2O3: 10.0,
-    MgO: 8.0,
-    Fe2O3: 5.0,
-    TiO2: 3.0
+    CaO: 45.4, SiO2: 4.6, Al2O3: 30.2, MgO: 0, Fe2O3: 0, TiO2: 0
   });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setComposition((prev) => ({
-      ...prev,
-      [name]: parseFloat(value)
-    }));
+    setComposition({ ...composition, [e.target.name]: parseFloat(e.target.value) || 0 });
   };
 
   const selectedTotal = composition.CaO + composition.SiO2 + composition.Al2O3;
@@ -31,6 +22,7 @@ function App() {
 
   const phaseJudgement = (() => {
     const { CaO, SiO2, Al2O3 } = normalized;
+
     if (CaO > 60 && Al2O3 < 10) {
       return `C₃S（トリカルシウムシリケート）領域の可能性です。\n用途：セメントの初期強度発現に寄与。早期硬化性が高い。`;
     }
@@ -53,7 +45,6 @@ function App() {
     <div style={{ padding: '1rem', fontFamily: 'sans-serif' }}>
       <h2>三元組成プロット（CaO–SiO₂–Al₂O₃）＋相領域判定＋C/S比</h2>
 
-      {/* 入力フォーム */}
       <div style={{ display: 'flex', flexDirection: 'column', maxWidth: 400 }}>
         {Object.keys(composition).map((key) => (
           <label key={key} style={{ marginBottom: '6px' }}>
@@ -61,26 +52,15 @@ function App() {
             <input
               type="number"
               name={key}
+              step="0.1"
               value={composition[key]}
               onChange={handleChange}
-              step="0.1"
-              min="0"
-              max="100"
-              inputMode="decimal"
-              placeholder="例: 45.0"
-              style={{
-                width: '100px',
-                padding: '6px',
-                marginLeft: '8px',
-                border: '1px solid #ccc',
-                borderRadius: '4px'
-              }}
+              style={{ width: '100px', padding: '5px' }}
             />
           </label>
         ))}
       </div>
 
-      {/* 換算結果 */}
       <p><strong>換算後の三成分：</strong></p>
       <ul>
         <li>CaO: {normalized.CaO.toFixed(1)}%</li>
@@ -88,7 +68,6 @@ function App() {
         <li>Al₂O₃: {normalized.Al2O3.toFixed(1)}%</li>
       </ul>
 
-      {/* C/S比 */}
       {csRatio !== null && (
         <p style={{ background: '#eef6ff', padding: '0.5rem', borderRadius: '6px' }}>
           <strong>📐 C/S比（CaO / SiO₂）: </strong>{csRatio.toFixed(2)}<br />
@@ -100,7 +79,6 @@ function App() {
         </p>
       )}
 
-      {/* 判定コメント */}
       <p style={{
         fontSize: '1.1rem',
         lineHeight: '1.6',
@@ -113,15 +91,14 @@ function App() {
         {phaseJudgement}
       </p>
 
-      {/* 三元グラフ */}
       <Plot
         data={[
           {
             type: 'scatterternary',
             mode: 'markers',
             a: [normalized.Al2O3],
-            b: [normalized.CaO],  // CaOを右側に
-            c: [normalized.SiO2], // SiO2を左側に
+            b: [normalized.SiO2],
+            c: [normalized.CaO],
             marker: { size: 14, color: 'red' },
             name: '換算組成'
           }
@@ -129,12 +106,12 @@ function App() {
         layout={{
           ternary: {
             sum: 100,
-            aaxis: { title: 'Al₂O₃', min: 0, max: 100, ticksuffix: '%' },
-            baxis: { title: 'CaO', min: 0, max: 100, ticksuffix: '%' },
-            caxis: { title: 'SiO₂', min: 0, max: 100, ticksuffix: '%' }
+            aaxis: { title: 'Al₂O₃', min: 0, tickmode: 'linear', tick0: 0, dtick: 20 },
+            baxis: { title: 'SiO₂', min: 0, tickmode: 'linear', tick0: 0, dtick: 20 },
+            caxis: { title: 'CaO', min: 0, tickmode: 'linear', tick0: 0, dtick: 20 }
           },
-          width: 520,
-          height: 520,
+          width: 500,
+          height: 500,
           margin: { t: 0 },
           showlegend: true
         }}
