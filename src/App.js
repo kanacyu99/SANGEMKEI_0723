@@ -3,7 +3,12 @@ import Plot from 'react-plotly.js';
 
 function App() {
   const [composition, setComposition] = useState({
-    CaO: 45.4, SiO2: 4.6, Al2O3: 30.2, MgO: 0, Fe2O3: 0, TiO2: 0
+    CaO: 45.4,
+    SiO2: 4.6,
+    Al2O3: 30.2,
+    MgO: 0,
+    Fe2O3: 0,
+    TiO2: 0
   });
 
   const handleChange = (e) => {
@@ -22,7 +27,6 @@ function App() {
 
   const phaseJudgement = (() => {
     const { CaO, SiO2, Al2O3 } = normalized;
-
     if (CaO > 60 && Al2O3 < 10) {
       return `C₃S（トリカルシウムシリケート）領域の可能性です。\n用途：セメントの初期強度発現に寄与。早期硬化性が高い。`;
     }
@@ -96,9 +100,9 @@ function App() {
           {
             type: 'scatterternary',
             mode: 'markers',
-            a: [normalized.Al2O3],
-            b: [normalized.CaO],   // 左軸
-            c: [normalized.SiO2],  // 右軸
+            a: [normalized.SiO2],
+            b: [normalized.CaO],
+            c: [normalized.Al2O3],
             marker: { size: 14, color: 'red' },
             name: '換算組成'
           }
@@ -106,9 +110,9 @@ function App() {
         layout={{
           ternary: {
             sum: 100,
-            aaxis: { title: 'Al₂O₃', min: 0, tickmode: 'linear', tick0: 0, dtick: 20 },
+            aaxis: { title: 'SiO₂', min: 0, tickmode: 'linear', tick0: 0, dtick: 20 },
             baxis: { title: 'CaO', min: 0, tickmode: 'linear', tick0: 0, dtick: 20 },
-            caxis: { title: 'SiO₂', min: 0, tickmode: 'linear', tick0: 0, dtick: 20 }
+            caxis: { title: 'Al₂O₃', min: 0, tickmode: 'linear', tick0: 0, dtick: 20 }
           },
           width: 500,
           height: 500,
