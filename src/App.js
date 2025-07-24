@@ -32,7 +32,7 @@ function App() {
       return `C₂S（ジカルシウムシリケート）領域の可能性です\n用途：長期強度に役立ちます。スラグ硬化型用途に多い。`;
     }
     if (Al2O3 > 30 && CaO > 40) {
-      return `C₃A（トリカルシウムアルミネート）領域の可能性です\n用途：凝結反応に関与。反応性は高いが耐久性には注意。`;
+      return `C₃A（トリカルシウムアルミネート）領域の可能性です\n用途：凝縮反応に関与。反応性は高いが耐久性には注意。`;
     }
     if (Al2O3 > 30 && CaO < 30) {
       return `CA・CA₂領域の可能性です\n用途：耐火材や高アルミナセメント。高温安定性が高い。`;
@@ -42,6 +42,19 @@ function App() {
     }
     return `中間相または複数相混在領域の可能性です\n用途：特性が明確でなく、調整によって性質が変動しやすい。`;
   })();
+
+  const phaseRegions = [
+    {
+      name: 'LIME',
+      line: { a: [0, 10], b: [10, 0], c: [90, 90] },
+      color: 'gray'
+    },
+    {
+      name: 'C₃A',
+      line: { a: [40, 20], b: [20, 10], c: [40, 70] },
+      color: 'gray'
+    }
+  ];
 
   return (
     <div style={{ padding: '1rem', fontFamily: 'sans-serif' }}>
@@ -94,15 +107,26 @@ function App() {
       </p>
 
       <Plot
-        data={[{
-          type: 'scatterternary',
-          mode: 'markers',
-          a: [normalized.SiO2],
-          b: [normalized.CaO],
-          c: [normalized.Al2O3],
-          marker: { size: 14, color: 'red' },
-          name: '換算組成'
-        }]}
+        data={[
+          ...phaseRegions.map(region => ({
+            type: 'scatterternary',
+            mode: 'lines',
+            a: region.line.a,
+            b: region.line.b,
+            c: region.line.c,
+            line: { color: region.color, width: 2 },
+            name: region.name
+          })),
+          {
+            type: 'scatterternary',
+            mode: 'markers',
+            a: [normalized.SiO2],
+            b: [normalized.CaO],
+            c: [normalized.Al2O3],
+            marker: { size: 14, color: 'red' },
+            name: '換算組成'
+          }
+        ]}
         layout={{
           ternary: {
             sum: 100,
