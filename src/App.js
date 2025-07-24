@@ -3,11 +3,20 @@ import Plot from 'react-plotly.js';
 
 function App() {
   const [composition, setComposition] = useState({
-    CaO: 42, SiO2: 32, Al2O3: 10, MgO: 8, Fe2O3: 5, TiO2: 3
+    CaO: 42.0,
+    SiO2: 32.0,
+    Al2O3: 10.0,
+    MgO: 8.0,
+    Fe2O3: 5.0,
+    TiO2: 3.0
   });
 
   const handleChange = (e) => {
-    setComposition({ ...composition, [e.target.name]: parseFloat(e.target.value) });
+    const { name, value } = e.target;
+    setComposition((prev) => ({
+      ...prev,
+      [name]: parseFloat(value)
+    }));
   };
 
   const selectedTotal = composition.CaO + composition.SiO2 + composition.Al2O3;
@@ -22,6 +31,7 @@ function App() {
 
   const phaseJudgement = (() => {
     const { CaO, SiO2, Al2O3 } = normalized;
+
     if (CaO > 60 && Al2O3 < 10) {
       return `C₃S（トリカルシウムシリケート）領域の可能性です。\n用途：セメントの初期強度発現に寄与。早期硬化性が高い。`;
     }
@@ -44,15 +54,19 @@ function App() {
     <div style={{ padding: '1rem', fontFamily: 'sans-serif' }}>
       <h2>三元組成プロット（CaO–SiO₂–Al₂O₃）＋相領域判定＋C/S比</h2>
 
+      {/* 入力フォーム */}
       <div style={{ display: 'flex', flexDirection: 'column', maxWidth: 400 }}>
         {Object.keys(composition).map((key) => (
           <label key={key} style={{ marginBottom: '6px' }}>
             {key}:{' '}
             <input
-              type="text"
+              type="number"
               name={key}
               value={composition[key]}
               onChange={handleChange}
+              step="0.1"
+              min="0"
+              max="100"
               inputMode="decimal"
               placeholder="例: 45.0"
               style={{
@@ -67,6 +81,7 @@ function App() {
         ))}
       </div>
 
+      {/* 換算結果 */}
       <p><strong>換算後の三成分：</strong></p>
       <ul>
         <li>CaO: {normalized.CaO.toFixed(1)}%</li>
@@ -74,6 +89,7 @@ function App() {
         <li>Al₂O₃: {normalized.Al2O3.toFixed(1)}%</li>
       </ul>
 
+      {/* C/S比 */}
       {csRatio !== null && (
         <p style={{ background: '#eef6ff', padding: '0.5rem', borderRadius: '6px' }}>
           <strong>📐 C/S比（CaO / SiO₂）: </strong>{csRatio.toFixed(2)}<br />
@@ -85,6 +101,7 @@ function App() {
         </p>
       )}
 
+      {/* 判定コメント */}
       <p style={{
         fontSize: '1.1rem',
         lineHeight: '1.6',
@@ -97,6 +114,7 @@ function App() {
         {phaseJudgement}
       </p>
 
+      {/* 三元グラフ */}
       <Plot
         data={[
           {
