@@ -96,9 +96,9 @@ function App() {
           {
             type: 'scatterternary',
             mode: 'markers',
-            a: [normalized.Al2O3], // 上軸
-            b: [normalized.SiO2],  // 左下軸
-            c: [normalized.CaO],   // 右下軸
+            a: [normalized.Al2O3],
+            b: [normalized.CaO],   // 左軸
+            c: [normalized.SiO2],  // 右軸
             marker: { size: 14, color: 'red' },
             name: '換算組成'
           }
@@ -106,9 +106,9 @@ function App() {
         layout={{
           ternary: {
             sum: 100,
-            aaxis: { title: 'Al₂O₃', min: 0, tickmode: 'linear', dtick: 20 },
-            baxis: { title: 'SiO₂', min: 0, tickmode: 'linear', dtick: 20 },
-            caxis: { title: 'CaO', min: 0, tickmode: 'linear', dtick: 20 }
+            aaxis: { title: 'Al₂O₃', min: 0, tickmode: 'linear', tick0: 0, dtick: 20 },
+            baxis: { title: 'CaO', min: 0, tickmode: 'linear', tick0: 0, dtick: 20 },
+            caxis: { title: 'SiO₂', min: 0, tickmode: 'linear', tick0: 0, dtick: 20 }
           },
           width: 500,
           height: 500,
