@@ -3,20 +3,17 @@ import Plot from 'react-plotly.js';
 
 function App() {
   const [composition, setComposition] = useState({
-    CaO: 45.4,
-    SiO2: 4.6,
-    Al2O3: 30.2,
-    MgO: 0,
-    Fe2O3: 0,
-    TiO2: 0
+    CaO: 45.4, SiO2: 4.6, Al2O3: 30.2, MgO: 0, Fe2O3: 0, TiO2: 0
   });
 
   const handleChange = (e) => {
-    setComposition({ ...composition, [e.target.name]: parseFloat(e.target.value) || 0 });
+    setComposition({
+      ...composition,
+      [e.target.name]: parseFloat(e.target.value) || 0
+    });
   };
 
   const selectedTotal = composition.CaO + composition.SiO2 + composition.Al2O3;
-
   const normalized = {
     CaO: (composition.CaO / selectedTotal) * 100,
     SiO2: (composition.SiO2 / selectedTotal) * 100,
@@ -27,22 +24,23 @@ function App() {
 
   const phaseJudgement = (() => {
     const { CaO, SiO2, Al2O3 } = normalized;
+
     if (CaO > 60 && Al2O3 < 10) {
-      return `C₃S（トリカルシウムシリケート）領域の可能性です。\n用途：セメントの初期強度発現に寄与。早期硬化性が高い。`;
+      return `C₃S（トリカルシウムシリケート）領域の可能性です\n用途：セメントの初期強度発現に役立ちます。早期硬化性が高い。`;
     }
     if (CaO > 45 && SiO2 > 30 && Al2O3 < 15) {
-      return `C₂S（ジカルシウムシリケート）領域の可能性です。\n用途：長期強度に寄与。スラグ硬化型用途に多い。`;
+      return `C₂S（ジカルシウムシリケート）領域の可能性です\n用途：長期強度に役立ちます。スラグ硬化型用途に多い。`;
     }
     if (Al2O3 > 30 && CaO > 40) {
-      return `C₃A（トリカルシウムアルミネート）領域の可能性です。\n用途：凝結反応に関与。反応性は高いが耐久性には注意。`;
+      return `C₃A（トリカルシウムアルミネート）領域の可能性です\n用途：凝結反応に関与。反応性は高いが耐久性には注意。`;
     }
     if (Al2O3 > 30 && CaO < 30) {
-      return `CA・CA₂領域の可能性です。\n用途：耐火材や高アルミナセメント。高温安定性が高い。`;
+      return `CA・CA₂領域の可能性です\n用途：耐火材や高アルミナセメント。高温安定性が高い。`;
     }
     if (SiO2 > 60) {
-      return `シリカリッチ領域の可能性です。\n用途：スラグ流動性向上。過剰で硬化性は低下。`;
+      return `シリカリッチ領域の可能性です\n用途：スラグ流動性向上。過剰で硬化性は低下。`;
     }
-    return `中間相または複数相混在領域の可能性です。\n用途：特性が明確でなく、調整によって性質が変動しやすい。`;
+    return `中間相または複数相混在領域の可能性です\n用途：特性が明確でなく、調整によって性質が変動しやすい。`;
   })();
 
   return (
@@ -96,23 +94,30 @@ function App() {
       </p>
 
       <Plot
-        data={[
-          {
-            type: 'scatterternary',
-            mode: 'markers',
-            a: [normalized.SiO2],
-            b: [normalized.CaO],
-            c: [normalized.Al2O3],
-            marker: { size: 14, color: 'red' },
-            name: '換算組成'
-          }
-        ]}
+        data={[{
+          type: 'scatterternary',
+          mode: 'markers',
+          a: [normalized.SiO2],
+          b: [normalized.CaO],
+          c: [normalized.Al2O3],
+          marker: { size: 14, color: 'red' },
+          name: '換算組成'
+        }]}
         layout={{
           ternary: {
             sum: 100,
-            aaxis: { title: 'SiO₂', min: 0, tickmode: 'linear', tick0: 0, dtick: 20 },
-            baxis: { title: 'CaO', min: 0, tickmode: 'linear', tick0: 0, dtick: 20 },
-            caxis: { title: 'Al₂O₃', min: 0, tickmode: 'linear', tick0: 0, dtick: 20 }
+            aaxis: {
+              title: 'SiO₂', min: 0,
+              tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%', direction: "clockwise"
+            },
+            baxis: {
+              title: 'CaO', min: 0,
+              tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%', direction: "clockwise"
+            },
+            caxis: {
+              title: 'Al₂O₃', min: 0,
+              tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%', direction: "clockwise"
+            }
           },
           width: 500,
           height: 500,
