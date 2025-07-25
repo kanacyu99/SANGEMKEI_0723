@@ -43,58 +43,53 @@ function App() {
   })();
 
   return (
-    <div style={{ padding: '1rem', fontFamily: 'sans-serif', maxWidth: '900px', margin: '0 auto' }}>
-      <h2 style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>三元組成プロット（CaO–SiO₂–Al₂O₃）＋相領域判定＋C/S比</h2>
+    <div style={{ padding: '1rem', fontFamily: 'sans-serif', maxWidth: '800px', margin: 'auto' }}>
+      <h2 style={{ fontSize: '1.2rem', textAlign: 'center' }}>三元組成プロット（CaO–SiO₂–Al₂O₃）＋相領域判定＋C/S比</h2>
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between' }}>
-        <div style={{ flex: '1 1 300px', marginRight: '1rem' }}>
-          {Object.keys(composition).map((key) => (
-            <label key={key} style={{ display: 'block', marginBottom: '8px' }}>
-              {key}:{' '}
-              <input
-                type="number"
-                name={key}
-                step="0.1"
-                value={composition[key]}
-                onChange={handleChange}
-                style={{ width: '100%', padding: '6px', borderRadius: '4px', border: '1px solid #ccc' }}
-              />
-            </label>
-          ))}
-        </div>
-
-        <div style={{ flex: '1 1 300px' }}>
-          <p><strong>換算後の三成分：</strong></p>
-          <ul>
-            <li>CaO: {normalized.CaO.toFixed(1)}%</li>
-            <li>SiO₂: {normalized.SiO2.toFixed(1)}%</li>
-            <li>Al₂O₃: {normalized.Al2O3.toFixed(1)}%</li>
-          </ul>
-
-          {csRatio !== null && (
-            <p style={{ background: '#eef6ff', padding: '0.5rem', borderRadius: '6px' }}>
-              <strong>\uD83D\uDCC0 C/S比（CaO / SiO₂）: </strong>{csRatio.toFixed(2)}<br />
-              {csRatio > 2.5
-                ? '→ 大カルシウムシリケート傾向（反応性・膨張性に注意）'
-                : csRatio < 1.5
-                  ? '→ シリカリッチ傾向（硬化性や強度に注意）'
-                  : '→ バランス型（C₂SやC₃Sの可能性）'}
-            </p>
-          )}
-
-          <p style={{
-            fontSize: '0.95rem',
-            lineHeight: '1.6',
-            backgroundColor: '#eef',
-            padding: '1rem',
-            borderRadius: '8px',
-            whiteSpace: 'pre-wrap'
-          }}>
-            🔍 判定結果：<br />
-            {phaseJudgement}
-          </p>
-        </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '1rem' }}>
+        {Object.keys(composition).map((key) => (
+          <label key={key}>
+            {key}: <input
+              type="number"
+              name={key}
+              step="0.1"
+              value={composition[key]}
+              onChange={handleChange}
+              style={{ width: '100%', padding: '6px', borderRadius: '4px', border: '1px solid #ccc' }}
+            />
+          </label>
+        ))}
       </div>
+
+      <p><strong>換算後の三成分：</strong></p>
+      <ul>
+        <li>CaO: {normalized.CaO.toFixed(1)}%</li>
+        <li>SiO₂: {normalized.SiO2.toFixed(1)}%</li>
+        <li>Al₂O₃: {normalized.Al2O3.toFixed(1)}%</li>
+      </ul>
+
+      {csRatio !== null && (
+        <p style={{ background: '#eef6ff', padding: '0.5rem', borderRadius: '6px' }}>
+          <strong>C/S比（CaO / SiO₂）: </strong>{csRatio.toFixed(2)}<br />
+          {csRatio > 2.5
+            ? '→ 大カルシウムシリケート傾向（反応性・膨張性に注意）'
+            : csRatio < 1.5
+              ? '→ シリカリッチ傾向（硬化性や強度に注意）'
+              : '→ バランス型（C₂SやC₃Sの可能性）'}
+        </p>
+      )}
+
+      <p style={{
+        fontSize: '1.1rem',
+        lineHeight: '1.6',
+        backgroundColor: '#eef',
+        padding: '1rem',
+        borderRadius: '8px',
+        whiteSpace: 'pre-wrap'
+      }}>
+        🔎 判定結果：<br />
+        {phaseJudgement}
+      </p>
 
       <Plot
         data={[{
@@ -109,24 +104,19 @@ function App() {
         layout={{
           ternary: {
             sum: 100,
-            aaxis: {
-              title: 'SiO₂', min: 0,
-              tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%', direction: 'clockwise'
-            },
-            baxis: {
-              title: 'CaO', min: 0,
-              tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%', direction: 'clockwise'
-            },
-            caxis: {
-              title: 'Al₂O₃', min: 0,
-              tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%', direction: 'clockwise'
-            }
+            aaxis: { title: 'SiO₂', min: 0, tickmode: 'linear', dtick: 20, ticksuffix: '%', direction: "clockwise" },
+            baxis: { title: 'CaO', min: 0, tickmode: 'linear', dtick: 20, ticksuffix: '%', direction: "clockwise" },
+            caxis: { title: 'Al₂O₃', min: 0, tickmode: 'linear', dtick: 20, ticksuffix: '%', direction: "clockwise" }
           },
-          width: 500,
+          autosize: true,
+          responsive: true,
+          width: undefined,
           height: 500,
           margin: { t: 20 },
           showlegend: true
         }}
+        useResizeHandler
+        style={{ width: '100%', height: '100%' }}
       />
     </div>
   );
