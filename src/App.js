@@ -1,10 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Plot from 'react-plotly.js';
 
 function App() {
   const [composition, setComposition] = useState({
     CaO: 45.4, SiO2: 4.6, Al2O3: 30.2, MgO: 0, Fe2O3: 0, TiO2: 0
   });
+
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleChange = (e) => {
     setComposition({
@@ -32,7 +40,7 @@ function App() {
       return `C₂S（ジカルシウムシリケート）領域の可能性です\n用途：長期強度に役立ちます。スラグ硬化型用途に多い。`;
     }
     if (Al2O3 > 30 && CaO > 40) {
-      return `C₃A（トリカルシウムアルミネート）領域の可能性です\n用途：凝結反応に関与。反応性は高いが耐久性には注意。`;
+      return `C₃A（トリカルシウムアルミネート）領域の可能性です\n用途：凝縮反応に関与。反応性は高いが耐久性には注意。`;
     }
     if (Al2O3 > 30 && CaO < 30) {
       return `CA・CA₂領域の可能性です\n用途：耐火材や高アルミナセメント。高温安定性が高い。`;
@@ -43,13 +51,16 @@ function App() {
     return `中間相または複数相混在領域の可能性です\n用途：特性が明確でなく、調整によって性質が変動しやすい。`;
   })();
 
-  return (
-    <div style={{ padding: '1rem', fontFamily: 'sans-serif' }}>
-      <h2>三元組成プロット（CaO–SiO₂–Al₂O₃）＋相領域判定＋C/S比</h2>
+  const isMobile = windowWidth < 600;
+  const plotSize = isMobile ? 320 : 500;
 
-      <div style={{ display: 'flex', flexDirection: 'column', maxWidth: 400 }}>
+  return (
+    <div style={{ padding: '1rem', fontFamily: 'sans-serif', maxWidth: 800, margin: '0 auto' }}>
+      <h2 style={{ fontSize: isMobile ? '1.2rem' : '1.5rem' }}>三元組成プロット（CaO–SiO₂–Al₂O₃）＋相領域判定＋C/S比</h2>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '1rem' }}>
         {Object.keys(composition).map((key) => (
-          <label key={key} style={{ marginBottom: '6px' }}>
+          <label key={key} style={{ fontSize: isMobile ? '0.9rem' : '1rem' }}>
             {key}:{' '}
             <input
               type="number"
@@ -57,7 +68,7 @@ function App() {
               step="0.1"
               value={composition[key]}
               onChange={handleChange}
-              style={{ width: '100px', padding: '5px' }}
+              style={{ width: '100%', maxWidth: '150px', padding: '6px', fontSize: '1rem', borderRadius: '4px', border: '1px solid #ccc' }}
             />
           </label>
         ))}
@@ -119,8 +130,8 @@ function App() {
               tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%', direction: "clockwise"
             }
           },
-          width: 500,
-          height: 500,
+          width: plotSize,
+          height: plotSize,
           margin: { t: 0 },
           showlegend: true
         }}
