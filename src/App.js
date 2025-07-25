@@ -44,12 +44,12 @@ function App() {
   })();
 
   return (
-    <div style={{ padding: '1rem', fontFamily: 'sans-serif' }}>
-      <h2>三元組成プロット（CaO–SiO₂–Al₂O₃）＋相領域判定＋C/S比</h2>
+    <div style={{ padding: '1rem', fontFamily: 'sans-serif', maxWidth: '100%', boxSizing: 'border-box' }}>
+      <h2 style={{ fontSize: '1.4rem' }}>三元組成プロット（CaO–SiO₂–Al₂O₃）＋相領域判定＋C/S比</h2>
 
-      <div style={{ display: 'flex', flexDirection: 'column', maxWidth: 400 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '100%', gap: '6px' }}>
         {Object.keys(composition).map((key) => (
-          <label key={key} style={{ marginBottom: '6px' }}>
+          <label key={key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             {key}:{' '}
             <input
               type="number"
@@ -57,7 +57,7 @@ function App() {
               step="0.1"
               value={composition[key]}
               onChange={handleChange}
-              style={{ width: '100px', padding: '5px' }}
+              style={{ flex: '0 0 100px', padding: '5px', fontSize: '1rem' }}
             />
           </label>
         ))}
@@ -82,7 +82,7 @@ function App() {
       )}
 
       <p style={{
-        fontSize: '1.1rem',
+        fontSize: '1rem',
         lineHeight: '1.6',
         backgroundColor: '#eef',
         padding: '1rem',
@@ -93,38 +93,44 @@ function App() {
         {phaseJudgement}
       </p>
 
-      <Plot
-        data={[{
-          type: 'scatterternary',
-          mode: 'markers',
-          a: [normalized.SiO2],
-          b: [normalized.CaO],
-          c: [normalized.Al2O3],
-          marker: { size: 14, color: 'red' },
-          name: '換算組成'
-        }]}
-        layout={{
-          ternary: {
-            sum: 100,
-            aaxis: {
-              title: 'SiO₂', min: 0,
-              tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%', direction: "clockwise"
+      <div style={{ overflowX: 'auto' }}>
+        <Plot
+          data={[{
+            type: 'scatterternary',
+            mode: 'markers',
+            a: [normalized.SiO2],
+            b: [normalized.CaO],
+            c: [normalized.Al2O3],
+            marker: { size: 14, color: 'red' },
+            name: '換算組成'
+          }]}
+          layout={{
+            ternary: {
+              sum: 100,
+              aaxis: {
+                title: 'SiO₂', min: 0,
+                tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%', direction: "clockwise"
+              },
+              baxis: {
+                title: 'CaO', min: 0,
+                tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%', direction: "clockwise"
+              },
+              caxis: {
+                title: 'Al₂O₃', min: 0,
+                tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%', direction: "clockwise"
+              }
             },
-            baxis: {
-              title: 'CaO', min: 0,
-              tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%', direction: "clockwise"
-            },
-            caxis: {
-              title: 'Al₂O₃', min: 0,
-              tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%', direction: "clockwise"
-            }
-          },
-          width: 500,
-          height: 500,
-          margin: { t: 0 },
-          showlegend: true
-        }}
-      />
+            autosize: true,
+            width: undefined,
+            height: 500,
+            margin: { t: 0 },
+            showlegend: true,
+            responsive: true
+          }}
+          style={{ width: '100%', height: '100%' }}
+          useResizeHandler={true}
+        />
+      </div>
     </div>
   );
 }
