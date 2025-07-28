@@ -23,21 +23,21 @@ function App() {
 
     const judgement = (() => {
       if (normCaO > 60 && normAl2O3 < 10) {
-        return 'C₃S（トリカルシウムシリケート）領域の可能性です\n用途：セメントの初期強度発現に寄与。早期硬化性が高い。';
+        return `C₃S（トリカルシウムシリケート）領域の可能性です\n用途：セメントの初期強度発現に寄与。早期硬化性が高い。`;
       }
       if (normCaO > 45 && normSiO2 > 30 && normAl2O3 < 15) {
-        return 'C₂S（ジカルシウムシリケート）領域の可能性です\n用途：長期強度に寄与。スラグ硬化型用途に多い。';
+        return `C₂S（ジカルシウムシリケート）領域の可能性です\n用途：長期強度に寄与。スラグ硬化型用途に多い。`;
       }
       if (normAl2O3 > 30 && normCaO > 40) {
-        return 'C₃A（トリカルシウムアルミネート）領域の可能性です\n用途：凝結反応に関与。反応性は高いが耐久性には注意。';
+        return `C₃A（トリカルシウムアルミネート）領域の可能性です\n用途：凝結反応に関与。反応性は高いが耐久性には注意。`;
       }
       if (normAl2O3 > 30 && normCaO < 30) {
-        return 'CA・CA₂領域の可能性です\n用途：耐火材や高アルミナセメント。高温安定性が高い。';
+        return `CA・CA₂領域の可能性です\n用途：耐火材や高アルミナセメント。高温安定性が高い。`;
       }
       if (normSiO2 > 60) {
-        return 'シリカリッチ領域の可能性です\n用途：スラグ流動性向上。過剰で硬化性は低下。';
+        return `シリカリッチ領域の可能性です\n用途：スラグ流動性向上。過剰で硬化性は低下。`;
       }
-      return '中間相または複数相混在領域の可能性です\n用途：特性が明確でなく、調整によって性質が変動しやすい。';
+      return `中間相または複数相混在領域の可能性です\n用途：特性が明確でなく、調整によって性質が変動しやすい。`;
     })();
 
     setDataList((prev) => [
@@ -58,14 +58,14 @@ function App() {
   };
 
   const toggleVisibility = (index) => {
-    const newDataList = [...dataList];
-    newDataList[index].visible = !newDataList[index].visible;
-    setDataList(newDataList);
+    const newList = [...dataList];
+    newList[index].visible = !newList[index].visible;
+    setDataList(newList);
   };
 
   return (
-    <div style={{ padding: '1rem', fontFamily: 'sans-serif', maxWidth: '700px', margin: 'auto' }}>
-      <h2>スラグ成分入力＆三元プロット＋C/S比＋相領域判定</h2>
+    <div style={{ padding: '1rem', fontFamily: 'sans-serif', maxWidth: '720px', margin: 'auto' }}>
+      <h2>スラグ成分入力＋三元プロット＋判定</h2>
 
       <input placeholder="スラグ名" value={slagName} onChange={(e) => setSlagName(e.target.value)} style={{ width: '100%', marginBottom: '0.5rem' }} />
       <input name="CaO" placeholder="CaO (%)" value={formData.CaO} onChange={handleInputChange} style={{ width: '100%', marginBottom: '0.5rem' }} />
@@ -74,19 +74,26 @@ function App() {
       <button onClick={addData} style={{ width: '100%', marginBottom: '1rem' }}>追加する</button>
 
       {dataList.map((d, i) => (
-        <div key={i} style={{ marginBottom: '1rem', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }}>
+        <div key={i} style={{ border: '1px solid #ccc', marginBottom: '1rem', padding: '0.5rem', borderRadius: '6px' }}>
           <label>
-            <input type="checkbox" checked={d.visible} onChange={() => toggleVisibility(i)} /> {d.slagName}
+            <input type="checkbox" checked={d.visible} onChange={() => toggleVisibility(i)} />
+            <strong> {d.slagName}</strong>
           </label>
-          <ul>
+          <ul style={{ margin: '0.5rem 0' }}>
             <li>CaO: {d.CaO.toFixed(1)}%</li>
             <li>SiO₂: {d.SiO2.toFixed(1)}%</li>
             <li>Al₂O₃: {d.Al2O3.toFixed(1)}%</li>
-            <li>📐 C/S比: {d.csRatio ? d.csRatio.toFixed(2) : '―'}</li>
+            <li>📐 C/S比: {d.csRatio ? d.csRatio.toFixed(2) : '—'}</li>
           </ul>
-          <div style={{ background: '#eef', padding: '0.5rem', borderRadius: '6px', whiteSpace: 'pre-wrap' }}>
-            🔎 判定結果：<br />{d.judgement}
-          </div>
+          <p style={{
+            background: '#eef',
+            padding: '0.5rem',
+            borderRadius: '4px',
+            whiteSpace: 'pre-wrap'
+          }}>
+            🔎 判定結果：<br />
+            {d.judgement}
+          </p>
         </div>
       ))}
 
@@ -98,7 +105,9 @@ function App() {
           b: [d.CaO],
           c: [d.Al2O3],
           marker: { size: 12 },
-          name: d.slagName
+          name: d.slagName,
+          text: d.slagName,
+          textposition: 'top center'
         }))}
         layout={{
           ternary: {
@@ -107,7 +116,7 @@ function App() {
             baxis: { title: 'CaO', ticksuffix: '%', min: 0 },
             caxis: { title: 'Al₂O₃', ticksuffix: '%', min: 0 }
           },
-          margin: { t: 20, l: 10, r: 10, b: 10 },
+          margin: { t: 30, l: 20, r: 20, b: 30 },
           showlegend: true,
           height: 500
         }}
