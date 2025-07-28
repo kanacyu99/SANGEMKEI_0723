@@ -66,12 +66,7 @@ function App() {
               step="0.1"
               value={composition[key]}
               onChange={handleChange}
-              style={{
-                width: '100%',
-                padding: '0.4rem',
-                borderRadius: '4px',
-                border: '1px solid #ccc'
-              }}
+              style={{ width: '100%', padding: '0.4rem', borderRadius: '4px', border: '1px solid #ccc' }}
             />
           </label>
         ))}
@@ -107,31 +102,22 @@ function App() {
         {phaseJudgement}
       </p>
 
-      <div style={{ width: '100%' }}>
+      <div style={{ width: '100%', height: '600px' }}>
         <Plot
           data={[currentData]}
           layout={{
             ternary: {
               sum: 100,
-              aaxis: {
-                title: { text: 'SiO₂ (%)', font: { size: 14 } },
-                tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%'
-              },
-              baxis: {
-                title: { text: 'CaO (%)', font: { size: 14 } },
-                tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%'
-              },
-              caxis: {
-                title: { text: 'Al₂O₃ (%)', font: { size: 14 } },
-                tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%'
-              }
+              aaxis: { title: 'SiO₂', tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%' },
+              baxis: { title: 'CaO', tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%' },
+              caxis: { title: 'Al₂O₃', tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%' }
             },
-            height: 600,
-            margin: { t: 20, l: 10, r: 10, b: 10 },
-            showlegend: true
+            margin: { t: 20, l: 20, r: 20, b: 20 },
+            showlegend: true,
+            height: 600
           }}
-          useResizeHandler={false}
-          style={{ width: '100%', height: '600px' }}
+          useResizeHandler
+          style={{ width: '100%', height: '100%' }}
         />
       </div>
     </div>
