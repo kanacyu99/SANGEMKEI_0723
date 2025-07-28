@@ -81,7 +81,7 @@ function App() {
 
       {csRatio !== null && (
         <p style={{ background: '#eef6ff', padding: '0.5rem', borderRadius: '6px' }}>
-          <strong>📀 C/S比（CaO / SiO₂）: </strong>{csRatio.toFixed(2)}<br />
+          <strong>📐 C/S比（CaO / SiO₂）: </strong>{csRatio.toFixed(2)}<br />
           {csRatio > 2.5
             ? '→ 大カルシウムシリケート傾向（反応性・膨張性に注意）'
             : csRatio < 1.5
@@ -108,16 +108,24 @@ function App() {
           layout={{
             ternary: {
               sum: 100,
-              aaxis: { title: 'SiO₂', tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%' },
-              baxis: { title: 'CaO', tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%' },
-              caxis: { title: 'Al₂O₃', tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%' }
+              aaxis: {
+                title: { text: 'SiO₂ (%)', font: { size: 14 } },
+                tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%'
+              },
+              baxis: {
+                title: { text: 'CaO (%)', font: { size: 14 } },
+                tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%'
+              },
+              caxis: {
+                title: { text: 'Al₂O₃ (%)', font: { size: 14 } },
+                tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%'
+              }
             },
             margin: { t: 20, l: 10, r: 10, b: 10 },
             showlegend: true,
-            height: 500
+            height: 600
           }}
-          useResizeHandler
-          style={{ width: '100%', height: '100%' }}
+          style={{ width: '100%', height: '600px' }}
         />
       </div>
     </div>
