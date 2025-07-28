@@ -66,7 +66,12 @@ function App() {
               step="0.1"
               value={composition[key]}
               onChange={handleChange}
-              style={{ width: '100%', padding: '0.4rem', borderRadius: '4px', border: '1px solid #ccc' }}
+              style={{
+                width: '100%',
+                padding: '0.4rem',
+                borderRadius: '4px',
+                border: '1px solid #ccc'
+              }}
             />
           </label>
         ))}
@@ -102,7 +107,7 @@ function App() {
         {phaseJudgement}
       </p>
 
-      <div style={{ width: '100%', overflowX: 'auto' }}>
+      <div style={{ width: '100%' }}>
         <Plot
           data={[currentData]}
           layout={{
@@ -121,10 +126,11 @@ function App() {
                 tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%'
               }
             },
+            height: 600,
             margin: { t: 20, l: 10, r: 10, b: 10 },
-            showlegend: true,
-            height: 600
+            showlegend: true
           }}
+          useResizeHandler={false}
           style={{ width: '100%', height: '600px' }}
         />
       </div>
