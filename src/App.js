@@ -1,4 +1,3 @@
-// App.jsx
 import React, { useState, useEffect } from 'react';
 import Plot from 'react-plotly.js';
 
@@ -67,9 +66,9 @@ function App() {
   const plotData = slagList.map((slag) => ({
     type: 'scatterternary',
     mode: 'markers+text',
-    a: [slag.SiO2],
-    b: [slag.CaO],
-    c: [slag.Al2O3],
+    a: [parseFloat(slag.SiO2)],
+    b: [parseFloat(slag.CaO)],
+    c: [parseFloat(slag.Al2O3)],
     text: slag.name,
     name: slag.name,
     marker: { size: 10 }
@@ -117,9 +116,9 @@ function App() {
           layout={{
             ternary: {
               sum: 100,
-              aaxis: { title: 'SiO₂', ticksuffix: '%' },
-              baxis: { title: 'CaO', ticksuffix: '%' },
-              caxis: { title: 'Al₂O₃', ticksuffix: '%' }
+              aaxis: { title: 'SiO₂', ticksuffix: '%', min: 0 },
+              baxis: { title: 'CaO', ticksuffix: '%', min: 0 },
+              caxis: { title: 'Al₂O₃', ticksuffix: '%', min: 0 }
             },
             showlegend: true,
             height: 600,
