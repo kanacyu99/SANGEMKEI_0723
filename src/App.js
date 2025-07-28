@@ -6,6 +6,9 @@ function App() {
     CaO: 45.4, SiO2: 4.6, Al2O3: 30.2, MgO: 0, Fe2O3: 0, TiO2: 0
   });
 
+  const [slags, setSlags] = useState([]);
+  const [slagName, setSlagName] = useState('');
+
   const handleChange = (e) => {
     setComposition({
       ...composition,
@@ -24,7 +27,6 @@ function App() {
 
   const phaseJudgement = (() => {
     const { CaO, SiO2, Al2O3 } = normalized;
-
     if (CaO > 60 && Al2O3 < 10) {
       return `C₃S（トリカルシウムシリケート）領域の可能性です\n用途：セメントの初期強度発現に役立ちます。早期硬化性が高い。`;
     }
@@ -43,25 +45,60 @@ function App() {
     return `中間相または複数相混在領域の可能性です\n用途：特性が明確でなく、調整によって性質が変動しやすい。`;
   })();
 
+  const handleAddSlag = () => {
+    const total = composition.CaO + composition.SiO2 + composition.Al2O3;
+    if (!slagName || total === 0) return;
+    const newSlag = {
+      name: slagName,
+      visible: true,
+      data: {
+        CaO: (composition.CaO / total) * 100,
+        SiO2: (composition.SiO2 / total) * 100,
+        Al2O3: (composition.Al2O3 / total) * 100
+      }
+    };
+    setSlags([...slags, newSlag]);
+    setSlagName('');
+  };
+
+  const toggleVisibility = (index) => {
+    const updated = [...slags];
+    updated[index].visible = !updated[index].visible;
+    setSlags(updated);
+  };
+
   return (
     <div style={{ padding: '1rem', fontFamily: 'sans-serif', maxWidth: '800px', margin: 'auto' }}>
       <h2>三元組成プロット（CaO–SiO₂–Al₂O₃）＋相領域判定＋C/S比</h2>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-        {Object.keys(composition).map((key) => (
-          <label key={key}>
-            {key}:{' '}
-            <input
-              type="number"
-              name={key}
-              step="0.1"
-              value={composition[key]}
-              onChange={handleChange}
-              style={{ width: '100%', padding: '0.4rem', borderRadius: '4px', border: '1px solid #ccc' }}
-            />
-          </label>
+        <input placeholder="スラグ名" value={slagName} onChange={e => setSlagName(e.target.value)} />
+        {['CaO', 'SiO2', 'Al2O3'].map((key) => (
+          <input
+            key={key}
+            type="number"
+            name={key}
+            placeholder={`${key} (%)`}
+            value={composition[key]}
+            onChange={handleChange}
+          />
         ))}
+        <button onClick={handleAddSlag}>追加する</button>
       </div>
+
+      <ul>
+        {slags.map((s, i) => (
+          <li key={i}>
+            <label>
+              <input
+                type="checkbox"
+                checked={s.visible}
+                onChange={() => toggleVisibility(i)}
+              /> {s.name}
+            </label>
+          </li>
+        ))}
+      </ul>
 
       <p><strong>換算後の三成分：</strong></p>
       <ul>
@@ -93,41 +130,29 @@ function App() {
         {phaseJudgement}
       </p>
 
-      <div style={{ width: '100%', overflowX: 'auto' }}>
-        <Plot
-          data={[{
-            type: 'scatterternary',
-            mode: 'markers',
-            a: [normalized.SiO2],
-            b: [normalized.CaO],
-            c: [normalized.Al2O3],
-            marker: { size: 14, color: 'red' },
-            name: '換算組成'
-          }]}
-          layout={{
-            ternary: {
-              sum: 100,
-              aaxis: {
-                title: { text: 'SiO₂', font: { size: 14 } },
-                min: 0, tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%'
-              },
-              baxis: {
-                title: { text: 'CaO', font: { size: 14 } },
-                min: 0, tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%'
-              },
-              caxis: {
-                title: { text: 'Al₂O₃', font: { size: 14 } },
-                min: 0, tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%'
-              }
-            },
-            margin: { t: 60, l: 60, r: 60, b: 60 },
-            showlegend: true,
-            height: 600
-          }}
-          useResizeHandler
-          style={{ width: '100%', height: '100%' }}
-        />
-      </div>
+      <Plot
+        data={slags.filter(s => s.visible).map((s, i) => ({
+          type: 'scatterternary',
+          mode: 'markers',
+          a: [s.data.SiO2],
+          b: [s.data.CaO],
+          c: [s.data.Al2O3],
+          marker: { size: 12 },
+          name: s.name
+        }))}
+        layout={{
+          ternary: {
+            sum: 100,
+            aaxis: { title: 'SiO₂', min: 0, dtick: 20, ticksuffix: '%' },
+            baxis: { title: 'CaO', min: 0, dtick: 20, ticksuffix: '%' },
+            caxis: { title: 'Al₂O₃', min: 0, dtick: 20, ticksuffix: '%' }
+          },
+          showlegend: true,
+          height: 500,
+          margin: { t: 10, l: 10, r: 10, b: 10 }
+        }}
+        style={{ width: '100%' }}
+      />
     </div>
   );
 }
