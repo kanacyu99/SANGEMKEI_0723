@@ -2,154 +2,114 @@ import React, { useState } from 'react';
 import Plot from 'react-plotly.js';
 
 function App() {
-  const [composition, setComposition] = useState({
-    CaO: 45.4, SiO2: 4.6, Al2O3: 30.2, MgO: 0, Fe2O3: 0, TiO2: 0
-  });
-
-  const [slags, setSlags] = useState([]);
   const [slagName, setSlagName] = useState('');
+  const [formData, setFormData] = useState({ CaO: '', SiO2: '', Al2O3: '' });
+  const [dataList, setDataList] = useState([]);
 
-  const handleChange = (e) => {
-    setComposition({
-      ...composition,
-      [e.target.name]: parseFloat(e.target.value) || 0
-    });
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const selectedTotal = composition.CaO + composition.SiO2 + composition.Al2O3;
-  const normalized = {
-    CaO: (composition.CaO / selectedTotal) * 100,
-    SiO2: (composition.SiO2 / selectedTotal) * 100,
-    Al2O3: (composition.Al2O3 / selectedTotal) * 100
-  };
+  const addData = () => {
+    const { CaO, SiO2, Al2O3 } = formData;
+    const total = parseFloat(CaO) + parseFloat(SiO2) + parseFloat(Al2O3);
+    if (total === 0 || !slagName) return;
 
-  const csRatio = normalized.SiO2 !== 0 ? normalized.CaO / normalized.SiO2 : null;
+    const normCaO = (parseFloat(CaO) / total) * 100;
+    const normSiO2 = (parseFloat(SiO2) / total) * 100;
+    const normAl2O3 = (parseFloat(Al2O3) / total) * 100;
+    const csRatio = normSiO2 !== 0 ? normCaO / normSiO2 : null;
 
-  const phaseJudgement = (() => {
-    const { CaO, SiO2, Al2O3 } = normalized;
-    if (CaO > 60 && Al2O3 < 10) {
-      return `C₃S（トリカルシウムシリケート）領域の可能性です\n用途：セメントの初期強度発現に役立ちます。早期硬化性が高い。`;
-    }
-    if (CaO > 45 && SiO2 > 30 && Al2O3 < 15) {
-      return `C₂S（ジカルシウムシリケート）領域の可能性です\n用途：長期強度に役立ちます。スラグ硬化型用途に多い。`;
-    }
-    if (Al2O3 > 30 && CaO > 40) {
-      return `C₃A（トリカルシウムアルミネート）領域の可能性です\n用途：凝結反応に関与。反応性は高いが耐久性には注意。`;
-    }
-    if (Al2O3 > 30 && CaO < 30) {
-      return `CA・CA₂領域の可能性です\n用途：耐火材や高アルミナセメント。高温安定性が高い。`;
-    }
-    if (SiO2 > 60) {
-      return `シリカリッチ領域の可能性です\n用途：スラグ流動性向上。過剰で硬化性は低下。`;
-    }
-    return `中間相または複数相混在領域の可能性です\n用途：特性が明確でなく、調整によって性質が変動しやすい。`;
-  })();
-
-  const handleAddSlag = () => {
-    const total = composition.CaO + composition.SiO2 + composition.Al2O3;
-    if (!slagName || total === 0) return;
-    const newSlag = {
-      name: slagName,
-      visible: true,
-      data: {
-        CaO: (composition.CaO / total) * 100,
-        SiO2: (composition.SiO2 / total) * 100,
-        Al2O3: (composition.Al2O3 / total) * 100
+    const judgement = (() => {
+      if (normCaO > 60 && normAl2O3 < 10) {
+        return 'C₃S（トリカルシウムシリケート）領域の可能性です\n用途：セメントの初期強度発現に寄与。早期硬化性が高い。';
       }
-    };
-    setSlags([...slags, newSlag]);
+      if (normCaO > 45 && normSiO2 > 30 && normAl2O3 < 15) {
+        return 'C₂S（ジカルシウムシリケート）領域の可能性です\n用途：長期強度に寄与。スラグ硬化型用途に多い。';
+      }
+      if (normAl2O3 > 30 && normCaO > 40) {
+        return 'C₃A（トリカルシウムアルミネート）領域の可能性です\n用途：凝結反応に関与。反応性は高いが耐久性には注意。';
+      }
+      if (normAl2O3 > 30 && normCaO < 30) {
+        return 'CA・CA₂領域の可能性です\n用途：耐火材や高アルミナセメント。高温安定性が高い。';
+      }
+      if (normSiO2 > 60) {
+        return 'シリカリッチ領域の可能性です\n用途：スラグ流動性向上。過剰で硬化性は低下。';
+      }
+      return '中間相または複数相混在領域の可能性です\n用途：特性が明確でなく、調整によって性質が変動しやすい。';
+    })();
+
+    setDataList((prev) => [
+      ...prev,
+      {
+        slagName,
+        CaO: normCaO,
+        SiO2: normSiO2,
+        Al2O3: normAl2O3,
+        csRatio,
+        judgement,
+        visible: true
+      }
+    ]);
+
     setSlagName('');
+    setFormData({ CaO: '', SiO2: '', Al2O3: '' });
   };
 
   const toggleVisibility = (index) => {
-    const updated = [...slags];
-    updated[index].visible = !updated[index].visible;
-    setSlags(updated);
+    const newDataList = [...dataList];
+    newDataList[index].visible = !newDataList[index].visible;
+    setDataList(newDataList);
   };
 
   return (
-    <div style={{ padding: '1rem', fontFamily: 'sans-serif', maxWidth: '800px', margin: 'auto' }}>
-      <h2>三元組成プロット（CaO–SiO₂–Al₂O₃）＋相領域判定＋C/S比</h2>
+    <div style={{ padding: '1rem', fontFamily: 'sans-serif', maxWidth: '700px', margin: 'auto' }}>
+      <h2>スラグ成分入力＆三元プロット＋C/S比＋相領域判定</h2>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-        <input placeholder="スラグ名" value={slagName} onChange={e => setSlagName(e.target.value)} />
-        {['CaO', 'SiO2', 'Al2O3'].map((key) => (
-          <input
-            key={key}
-            type="number"
-            name={key}
-            placeholder={`${key} (%)`}
-            value={composition[key]}
-            onChange={handleChange}
-          />
-        ))}
-        <button onClick={handleAddSlag}>追加する</button>
-      </div>
+      <input placeholder="スラグ名" value={slagName} onChange={(e) => setSlagName(e.target.value)} style={{ width: '100%', marginBottom: '0.5rem' }} />
+      <input name="CaO" placeholder="CaO (%)" value={formData.CaO} onChange={handleInputChange} style={{ width: '100%', marginBottom: '0.5rem' }} />
+      <input name="SiO2" placeholder="SiO₂ (%)" value={formData.SiO2} onChange={handleInputChange} style={{ width: '100%', marginBottom: '0.5rem' }} />
+      <input name="Al2O3" placeholder="Al₂O₃ (%)" value={formData.Al2O3} onChange={handleInputChange} style={{ width: '100%', marginBottom: '1rem' }} />
+      <button onClick={addData} style={{ width: '100%', marginBottom: '1rem' }}>追加する</button>
 
-      <ul>
-        {slags.map((s, i) => (
-          <li key={i}>
-            <label>
-              <input
-                type="checkbox"
-                checked={s.visible}
-                onChange={() => toggleVisibility(i)}
-              /> {s.name}
-            </label>
-          </li>
-        ))}
-      </ul>
-
-      <p><strong>換算後の三成分：</strong></p>
-      <ul>
-        <li>CaO: {normalized.CaO.toFixed(1)}%</li>
-        <li>SiO₂: {normalized.SiO2.toFixed(1)}%</li>
-        <li>Al₂O₃: {normalized.Al2O3.toFixed(1)}%</li>
-      </ul>
-
-      {csRatio !== null && (
-        <p style={{ background: '#eef6ff', padding: '0.5rem', borderRadius: '6px' }}>
-          <strong>📐 C/S比（CaO / SiO₂）: </strong>{csRatio.toFixed(2)}<br />
-          {csRatio > 2.5
-            ? '→ 大カルシウムシリケート傾向（反応性・膨張性に注意）'
-            : csRatio < 1.5
-              ? '→ シリカリッチ傾向（硬化性や強度に注意）'
-              : '→ バランス型（C₂SやC₃Sの可能性）'}
-        </p>
-      )}
-
-      <p style={{
-        fontSize: '1.1rem',
-        lineHeight: '1.6',
-        backgroundColor: '#eef',
-        padding: '1rem',
-        borderRadius: '8px',
-        whiteSpace: 'pre-wrap'
-      }}>
-        🔎 判定結果：<br />
-        {phaseJudgement}
-      </p>
+      {dataList.map((d, i) => (
+        <div key={i} style={{ marginBottom: '1rem', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '4px' }}>
+          <label>
+            <input type="checkbox" checked={d.visible} onChange={() => toggleVisibility(i)} /> {d.slagName}
+          </label>
+          <ul>
+            <li>CaO: {d.CaO.toFixed(1)}%</li>
+            <li>SiO₂: {d.SiO2.toFixed(1)}%</li>
+            <li>Al₂O₃: {d.Al2O3.toFixed(1)}%</li>
+            <li>📐 C/S比: {d.csRatio ? d.csRatio.toFixed(2) : '―'}</li>
+          </ul>
+          <div style={{ background: '#eef', padding: '0.5rem', borderRadius: '6px', whiteSpace: 'pre-wrap' }}>
+            🔎 判定結果：<br />{d.judgement}
+          </div>
+        </div>
+      ))}
 
       <Plot
-        data={slags.filter(s => s.visible).map((s, i) => ({
+        data={dataList.filter(d => d.visible).map(d => ({
           type: 'scatterternary',
-          mode: 'markers',
-          a: [s.data.SiO2],
-          b: [s.data.CaO],
-          c: [s.data.Al2O3],
+          mode: 'markers+text',
+          a: [d.SiO2],
+          b: [d.CaO],
+          c: [d.Al2O3],
           marker: { size: 12 },
-          name: s.name
+          name: d.slagName
         }))}
         layout={{
           ternary: {
             sum: 100,
-            aaxis: { title: 'SiO₂', min: 0, dtick: 20, ticksuffix: '%' },
-            baxis: { title: 'CaO', min: 0, dtick: 20, ticksuffix: '%' },
-            caxis: { title: 'Al₂O₃', min: 0, dtick: 20, ticksuffix: '%' }
+            aaxis: { title: 'SiO₂', ticksuffix: '%', min: 0 },
+            baxis: { title: 'CaO', ticksuffix: '%', min: 0 },
+            caxis: { title: 'Al₂O₃', ticksuffix: '%', min: 0 }
           },
+          margin: { t: 20, l: 10, r: 10, b: 10 },
           showlegend: true,
-          height: 500,
-          margin: { t: 10, l: 10, r: 10, b: 10 }
+          height: 500
         }}
         style={{ width: '100%' }}
       />
