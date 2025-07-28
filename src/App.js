@@ -50,7 +50,7 @@ function App() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
         {Object.keys(composition).map((key) => (
           <label key={key}>
-            {key}:
+            {key}:{' '}
             <input
               type="number"
               name={key}
@@ -107,13 +107,22 @@ function App() {
           layout={{
             ternary: {
               sum: 100,
-              aaxis: { title: 'SiO₂', min: 0, tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%' },
-              baxis: { title: 'CaO', min: 0, tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%' },
-              caxis: { title: 'Al₂O₃', min: 0, tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%' }
+              aaxis: {
+                title: { text: 'SiO₂', font: { size: 14 } },
+                min: 0, tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%'
+              },
+              baxis: {
+                title: { text: 'CaO', font: { size: 14 } },
+                min: 0, tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%'
+              },
+              caxis: {
+                title: { text: 'Al₂O₃', font: { size: 14 } },
+                min: 0, tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%'
+              }
             },
-            margin: { t: 20, l: 10, r: 10, b: 10 },
+            margin: { t: 60, l: 60, r: 60, b: 60 },
             showlegend: true,
-            height: 500
+            height: 600
           }}
           useResizeHandler
           style={{ width: '100%', height: '100%' }}
