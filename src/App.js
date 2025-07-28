@@ -1,3 +1,4 @@
+// App.jsx
 import React, { useState, useEffect } from 'react';
 import Plot from 'react-plotly.js';
 
@@ -9,9 +10,7 @@ function App() {
 
   useEffect(() => {
     const saved = localStorage.getItem('slagList');
-    if (saved) {
-      setSlagList(JSON.parse(saved));
-    }
+    if (saved) setSlagList(JSON.parse(saved));
   }, []);
 
   useEffect(() => {
@@ -23,8 +22,8 @@ function App() {
   };
 
   const parseNum = (val) => {
-    const n = parseFloat(val);
-    return isNaN(n) ? 0 : n;
+    const num = parseFloat(val);
+    return isNaN(num) ? 0 : num;
   };
 
   const handleAdd = () => {
@@ -37,13 +36,11 @@ function App() {
 
     const normalized = {
       name: input.name || `スラグ${slagList.length + 1}`,
+      raw: { CaO, SiO2, Al2O3 },
       CaO: (CaO / total) * 100,
       SiO2: (SiO2 / total) * 100,
       Al2O3: (Al2O3 / total) * 100,
-      csRatio: SiO2 !== 0 ? CaO / SiO2 : null,
-      original: {
-        CaO, SiO2, Al2O3
-      }
+      csRatio: SiO2 !== 0 ? CaO / SiO2 : null
     };
 
     setSlagList([...slagList, normalized]);
@@ -51,8 +48,7 @@ function App() {
   };
 
   const handleDelete = (index) => {
-    const updated = slagList.filter((_, i) => i !== index);
-    setSlagList(updated);
+    setSlagList(slagList.filter((_, i) => i !== index));
   };
 
   const phaseJudgement = (CaO, SiO2, Al2O3) => {
@@ -89,7 +85,6 @@ function App() {
           style={{ width: '100%', margin: '0.2rem 0', padding: '0.4rem' }}
         />
       ))}
-
       <button
         onClick={handleAdd}
         style={{
@@ -102,10 +97,10 @@ function App() {
 
       <ul style={{ paddingLeft: '1rem' }}>
         {slagList.map((s, idx) => (
-          <li key={idx} style={{ marginBottom: '1rem' }}>
+          <li key={idx} style={{ marginBottom: '1rem', borderBottom: '1px solid #ddd', paddingBottom: '0.5rem' }}>
             <strong>{s.name}</strong><br />
-            入力成分: CaO: {s.original.CaO}%, SiO₂: {s.original.SiO2}%, Al₂O₃: {s.original.Al2O3}%<br />
-            換算後: CaO: {s.CaO.toFixed(1)}%, SiO₂: {s.SiO2.toFixed(1)}%, Al₂O₃: {s.Al2O3.toFixed(1)}%<br />
+            🔹 入力値: CaO: {s.raw.CaO}%, SiO₂: {s.raw.SiO2}%, Al₂O₃: {s.raw.Al2O3}%<br />
+            🔸 換算後: CaO: {s.CaO.toFixed(1)}%, SiO₂: {s.SiO2.toFixed(1)}%, Al₂O₃: {s.Al2O3.toFixed(1)}%<br />
             📐 C/S比: {s.csRatio?.toFixed(2)}<br />
             🔎 判定: {phaseJudgement(s.CaO, s.SiO2, s.Al2O3)}<br />
             <button onClick={() => handleDelete(idx)} style={{ marginTop: '0.2rem' }}>❌ 削除</button>
