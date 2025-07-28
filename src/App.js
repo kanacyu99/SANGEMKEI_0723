@@ -3,7 +3,12 @@ import Plot from 'react-plotly.js';
 
 function App() {
   const [composition, setComposition] = useState({
-    CaO: 45.4, SiO2: 4.6, Al2O3: 30.2, MgO: 0, Fe2O3: 0, TiO2: 0
+    CaO: 45.4,
+    SiO2: 4.6,
+    Al2O3: 30.2,
+    MgO: 0,
+    Fe2O3: 0,
+    TiO2: 0
   });
 
   const handleChange = (e) => {
@@ -24,7 +29,6 @@ function App() {
 
   const phaseJudgement = (() => {
     const { CaO, SiO2, Al2O3 } = normalized;
-
     if (CaO > 60 && Al2O3 < 10) {
       return `C₃S（トリカルシウムシリケート）領域の可能性です\n用途：セメントの初期強度発現に役立ちます。早期硬化性が高い。`;
     }
@@ -44,10 +48,10 @@ function App() {
   })();
 
   return (
-    <div style={{ padding: '1rem', fontFamily: 'sans-serif', maxWidth: '800px', margin: 'auto' }}>
+    <div style={{ padding: '1rem', fontFamily: 'sans-serif', maxWidth: '700px', margin: 'auto' }}>
       <h2>三元組成プロット（CaO–SiO₂–Al₂O₃）＋相領域判定＋C/S比</h2>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '1rem' }}>
         {Object.keys(composition).map((key) => (
           <label key={key}>
             {key}:{' '}
@@ -57,7 +61,7 @@ function App() {
               step="0.1"
               value={composition[key]}
               onChange={handleChange}
-              style={{ width: '100%', padding: '0.4rem', borderRadius: '4px', border: '1px solid #ccc' }}
+              style={{ width: '100%', maxWidth: '120px', padding: '5px' }}
             />
           </label>
         ))}
@@ -93,32 +97,30 @@ function App() {
         {phaseJudgement}
       </p>
 
-      <div style={{ width: '100%', overflowX: 'auto' }}>
-        <Plot
-          data={[{
-            type: 'scatterternary',
-            mode: 'markers',
-            a: [normalized.SiO2],
-            b: [normalized.CaO],
-            c: [normalized.Al2O3],
-            marker: { size: 14, color: 'red' },
-            name: '換算組成'
-          }]}
-          layout={{
-            ternary: {
-              sum: 100,
-              aaxis: { title: 'SiO₂', min: 0, tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%' },
-              baxis: { title: 'CaO', min: 0, tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%' },
-              caxis: { title: 'Al₂O₃', min: 0, tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%' }
-            },
-            margin: { t: 20, l: 10, r: 10, b: 10 },
-            showlegend: true,
-            height: 480
-          }}
-          useResizeHandler
-          style={{ width: '100%', height: '100%' }}
-        />
-      </div>
+      <Plot
+        data={[{
+          type: 'scatterternary',
+          mode: 'markers',
+          a: [normalized.SiO2],
+          b: [normalized.CaO],
+          c: [normalized.Al2O3],
+          marker: { size: 14, color: 'red' },
+          name: '換算組成'
+        }]}
+        layout={{
+          ternary: {
+            sum: 100,
+            aaxis: { title: 'SiO₂', min: 0, tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%' },
+            baxis: { title: 'CaO', min: 0, tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%' },
+            caxis: { title: 'Al₂O₃', min: 0, tickmode: 'linear', tick0: 0, dtick: 20, ticksuffix: '%' }
+          },
+          width: 500,
+          height: 500,
+          margin: { t: 60, l: 60, r: 60, b: 60 },
+          showlegend: true
+        }}
+        style={{ width: '100%', maxWidth: '600px', margin: 'auto' }}
+      />
     </div>
   );
 }
