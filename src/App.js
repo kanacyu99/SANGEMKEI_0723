@@ -1,3 +1,4 @@
+// App.jsx
 import React, { useState, useEffect } from 'react';
 import Plot from 'react-plotly.js';
 
@@ -7,7 +8,6 @@ function App() {
     name: '', CaO: '', SiO2: '', Al2O3: '', MgO: '', Fe2O3: '', TiO2: ''
   });
 
-  // ローカルストレージから読み込み
   useEffect(() => {
     const saved = localStorage.getItem('slagList');
     if (saved) {
@@ -15,7 +15,6 @@ function App() {
     }
   }, []);
 
-  // ローカルストレージに保存
   useEffect(() => {
     localStorage.setItem('slagList', JSON.stringify(slagList));
   }, [slagList]);
@@ -66,9 +65,9 @@ function App() {
   const plotData = slagList.map((slag) => ({
     type: 'scatterternary',
     mode: 'markers+text',
-    a: [parseFloat(slag.SiO2)],
-    b: [parseFloat(slag.CaO)],
-    c: [parseFloat(slag.Al2O3)],
+    a: [slag.SiO2],
+    b: [slag.CaO],
+    c: [slag.Al2O3],
     text: slag.name,
     name: slag.name,
     marker: { size: 10 }
@@ -88,6 +87,7 @@ function App() {
           style={{ width: '100%', margin: '0.2rem 0', padding: '0.4rem' }}
         />
       ))}
+
       <button
         onClick={handleAdd}
         style={{
@@ -102,7 +102,7 @@ function App() {
         {slagList.map((s, idx) => (
           <li key={idx} style={{ marginBottom: '1rem' }}>
             <strong>{s.name}</strong><br />
-            CaO: {s.CaO.toFixed(1)}%, SiO₂: {s.SiO2.toFixed(1)}%, Al₂O₃: {s.Al2O3.toFixed(1)}%<br />
+            換算後成分: CaO: {s.CaO.toFixed(1)}%, SiO₂: {s.SiO2.toFixed(1)}%, Al₂O₃: {s.Al2O3.toFixed(1)}%<br />
             📐 C/S比: {s.csRatio?.toFixed(2)}<br />
             🔎 判定: {phaseJudgement(s.CaO, s.SiO2, s.Al2O3)}<br />
             <button onClick={() => handleDelete(idx)} style={{ marginTop: '0.2rem' }}>❌ 削除</button>
@@ -116,9 +116,9 @@ function App() {
           layout={{
             ternary: {
               sum: 100,
-              aaxis: { title: 'SiO₂', ticksuffix: '%', min: 0 },
-              baxis: { title: 'CaO', ticksuffix: '%', min: 0 },
-              caxis: { title: 'Al₂O₃', ticksuffix: '%', min: 0 }
+              aaxis: { title: 'SiO₂', ticksuffix: '%' },
+              baxis: { title: 'CaO', ticksuffix: '%' },
+              caxis: { title: 'Al₂O₃', ticksuffix: '%' }
             },
             showlegend: true,
             height: 600,
